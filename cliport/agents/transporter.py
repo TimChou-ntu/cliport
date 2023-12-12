@@ -41,9 +41,15 @@ class TransporterAgent(LightningModule):
         self.save_steps = cfg['train']['save_steps']
 
         self._build_model()
+        # for n, params in self.attention.named_parameters():
+        #     if params.requires_grad:
+        #         print(n)
         self._optimizers = {
             'attn': torch.optim.Adam(self.attention.parameters(), lr=self.cfg['train']['lr']),
+            # 'attn': torch.optim.Adam(self.attention.parameters(), lr=self.cfg['train']['lr']),
             'trans': torch.optim.Adam(self.transport.parameters(), lr=self.cfg['train']['lr'])
+            # 'trans': torch.optim.Adam([self.transport.query_stream_one.parameters() , self.transport.query_stream_two.parameters() , self.transport.conv.parameters() , self.transport.blip2.model.affordance_head.parameters()], lr=self.cfg['train']['lr'])
+            # 'trans': torch.optim.Adam([{'params': self.transport.query_stream_one.parameters(), 'lr': self.cfg['train']['lr']}, {'params': self.transport.query_stream_two.parameters(), 'lr': self.cfg['train']['lr']}, {'params': self.transport.conv.parameters(), 'lr': self.cfg['train']['lr']}, {'params': self.transport.blip2.model.affordance_head.parameters(), 'lr': self.cfg['train']['lr']}, {'params': self.transport.fusion_query.parameters(), 'lr': self.cfg['train']['lr']}], lr=self.cfg['train']['lr'])
         }
         print("Agent: {}, Logging: {}".format(name, cfg['train']['log']))
 
@@ -98,6 +104,11 @@ class TransporterAgent(LightningModule):
         if backprop:
             attn_optim = self._optimizers['attn']
             self.manual_backward(loss, attn_optim)
+            
+            # for name, param in self.attention.named_parameters():
+            #     if param.grad is not None:
+            #         print(f"Parameter: {name}")
+                    # print(f"Parameter: {name}, Gradient: {param.grad}")
             attn_optim.step()
             attn_optim.zero_grad()
 
@@ -339,7 +350,7 @@ class TransporterAgent(LightningModule):
         return self.test_ds
 
     def load(self, model_path):
-        self.load_state_dict(torch.load(model_path)['state_dict'])
+        self.load_state_dict(torch.load(model_path)['state_dict'], strict=False)
         self.to(device=self.device_type)
 
 

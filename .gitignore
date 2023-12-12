@@ -6,6 +6,8 @@ cliport/jobs/
 jobs/
 videos/
 checkpoints/
+exp*/
+packing_boxes_10_no_pretrain/
 
 # Large Asserts
 cliport/environments/assets/google/

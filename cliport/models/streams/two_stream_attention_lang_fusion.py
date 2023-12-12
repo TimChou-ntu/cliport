@@ -5,7 +5,8 @@ import torch.nn.functional as F
 from cliport.models.core.attention import Attention
 import cliport.models as models
 import cliport.models.core.fusion as fusion
-
+from model.ravenblip2 import RavenBlip2
+import torchvision
 
 class TwoStreamAttentionLangFusion(Attention):
     """Two Stream Language-Conditioned Attention (a.k.a Pick) module."""
@@ -80,3 +81,53 @@ class TwoStreamAttentionLangFusionLat(TwoStreamAttentionLangFusion):
         x2 = self.attn_stream_two(x, lat, l)
         x = self.fusion(x1, x2)
         return x
+
+# class cjjAttentionLangFusionLat(TwoStreamAttentionLangFusion):
+#     def __init__(self, stream_fcn, in_shape, n_rotations, preprocess, cfg, device):
+#         self.fusion_type = cfg['train']['attn_stream_fusion_type']
+#         super().__init__(stream_fcn, in_shape, n_rotations, preprocess, cfg, device)
+        
+#     def _build_nets(self):
+#         stream_one_fcn, stream_two_fcn = self.stream_fcn
+#         stream_one_model = models.names[stream_one_fcn]
+#         stream_two_model = models.names[stream_two_fcn]
+
+#         self.attn_stream_one = stream_one_model(self.in_shape, 1, self.cfg, self.device, self.preprocess)
+#         self.attn_stream_two = stream_two_model(self.in_shape, 1, self.cfg, self.device, self.preprocess)
+#         self.fusion = fusion.names[self.fusion_type](input_dim=1)
+
+#         print(f"Attn FCN - Stream One: {stream_one_fcn}, Stream Two: {stream_two_fcn}, Stream Fusion: {self.fusion_type}")
+
+
+#     def attend(self, x, l):
+#         x1, lat = self.attn_stream_one(x)
+#         x2 = self.attn_stream_two(x, lat, l)
+#         x = self.fusion(x1, x2)
+#         return x
+class cjjAttentionLangFusionLat(TwoStreamAttentionLangFusion):
+    """Language-Conditioned Attention (a.k.a Pick) module with lateral connections."""
+
+    def __init__(self, stream_fcn, in_shape, n_rotations, preprocess, cfg, device):
+        self.fusion_type = cfg['train']['attn_stream_fusion_type']
+        super().__init__(stream_fcn, in_shape, n_rotations, preprocess, cfg, device)
+
+    def _build_nets(self):
+        # cjj
+        self.blip2 = RavenBlip2(config_path='/mnt/sdb/timothy/Desktop/2023Fall/cliport/model/config.yaml')
+        self.conv = torch.nn.Conv2d(32, 1, 1)
+        self.transform = torchvision.transforms.ToPILImage()
+
+        print(f"Attention FCN - cjj attn")
+
+    def attend(self, in_tensor, l):
+        if len(in_tensor.shape) == 4:
+            in_tensor = in_tensor.squeeze(0)
+        batch = {
+            "init_image": [self.transform(in_tensor[:3, :, :])],
+            "instruction": [l],
+        }
+        logits = self.blip2(batch)
+        # logits = torch.nn.functional.pad(logits, (80, 80, 0, 0), mode='reflect')
+        logits = self.conv(logits)
+
+        return logits

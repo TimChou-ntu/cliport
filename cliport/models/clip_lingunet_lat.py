@@ -10,6 +10,8 @@ from cliport.models.core.clip import build_model, load_clip, tokenize
 from cliport.models.core import fusion
 from cliport.models.core.fusion import FusionConvLat
 
+from model.ravenblip2 import RavenBlip2
+import torchvision
 
 class CLIPLingUNetLat(nn.Module):
     """ CLIP RN50 with U-Net skip connections and lateral connections """
@@ -105,6 +107,7 @@ class CLIPLingUNetLat(nn.Module):
         in_shape = x.shape
         x = x[:,:3]  # select RGB
         x, im = self.encode_image(x)
+        # (x: (1,2048,10,10), im: list of len 8)
         x = x.to(in_type)
 
         l_enc, l_emb, l_mask = self.encode_text(l)

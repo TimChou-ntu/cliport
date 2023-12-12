@@ -15,6 +15,7 @@ from cliport.agents.transporter_image_goal import ImageGoalTransporterAgent
 
 from cliport.agents.transporter import TwoStreamClipUNetLatTransporterAgent
 from cliport.agents.transporter_lang_goal import TwoStreamClipLingUNetLatTransporterAgent
+from cliport.agents.transporter_lang_goal import cjjagent, cjjagent_attn, cjjagent_two_stream
 from cliport.agents.transporter_lang_goal import TwoStreamClipFilmLingUNetLatTransporterAgent
 
 
@@ -23,6 +24,9 @@ names = {
          ### CLIPort ###
          'cliport': TwoStreamClipLingUNetLatTransporterAgent,
          'two_stream_clip_lingunet_lat_transporter': TwoStreamClipLingUNetLatTransporterAgent,
+         'ours': cjjagent,
+         'ours_trans_two_stream': cjjagent_two_stream,
+         'ours_attn': cjjagent_attn,
 
          ################################
          ### Two-Stream Architectures ###

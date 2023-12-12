@@ -10,14 +10,14 @@ from cliport.dataset import RavensDataset, RavensMultiTaskDataset
 import hydra
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 
 
 @hydra.main(config_path="./cfg", config_name='train')
 def main(cfg):
     # Logger
     wandb_logger = WandbLogger(name=cfg['tag']) if cfg['train']['log'] else None
-
+    tensorboard_logger = TensorBoardLogger(save_dir=os.getcwd(), version=1, name="lightning_logs")
     # Checkpoint saver
     hydra_dir = Path(os.getcwd())
     checkpoint_path = os.path.join(cfg['train']['train_dir'], 'checkpoints')
@@ -35,7 +35,8 @@ def main(cfg):
     trainer = Trainer(
         gpus=cfg['train']['gpu'],
         fast_dev_run=cfg['debug'],
-        logger=wandb_logger,
+        # logger=wandb_logger,
+        logger=tensorboard_logger,
         checkpoint_callback=checkpoint_callback,
         max_epochs=max_epochs,
         automatic_optimization=False,

@@ -1,0 +1,12 @@
+# python cliport/train.py train.task=packing-shapes \
+# python cliport/train.py train.task=packing-boxes-pairs-seen-colors\
+# python cliport/train.py train.task=put-block-in-bowl-unseen-colors\
+python cliport/train.py train.task=packing-shapes \
+                        train.agent=ours_trans_two_stream \
+                        train.attn_stream_fusion_type=add \
+                        train.trans_stream_fusion_type=conv \
+                        train.lang_fusion_type=mult \
+                        train.n_demos=1000 \
+                        train.n_steps=201000 \
+                        train.exp_folder=exp_ours_twostreamblip \
+                        dataset.cache=False 

@@ -35,6 +35,7 @@ names = {
     'untrained_rn50_bert_lingunet': UntrainedRN50BertLingUNet,
 
     # lateral connections
+    # 'cjj_unet_lat': CjjLingUNetLat,
     'plain_resnet_lat': ResNet45_10s,
     'clip_unet_lat': CLIPUNetLat,
     'clip_lingunet_lat': CLIPLingUNetLat,

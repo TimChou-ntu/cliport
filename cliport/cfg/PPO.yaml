@@ -9,6 +9,11 @@ hydra:
 
 mode: val # 'val' or 'test'
 
+# PPO
+outer_epoch: 1
+PPO_task: packing-boxes-pairs-seen-colors
+
+
 # eval settings
 agent: cliport
 n_demos: 100 # number of val instances
