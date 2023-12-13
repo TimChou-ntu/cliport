@@ -1,0 +1,24 @@
+model:
+  max_txt_len: 32
+  max_output_txt_len: 32
+custom:
+  embed_dim: 256
+  model_path: '/mnt/sdb/timothy/Desktop/2023Fall/cliport/model/instruct_blip_flanxl_trimmed.pth'
+  # model_path: '/mnt/sdb/timothy/Desktop/2023Fall/cliport/pretrained_weights/checkpoint_9.pth'
+  # model_path: '/mnt/sdb/timothy/Desktop/2023Fall/cliport/pretrained_weights/checkpoint_1.pth'
+  # image_height: 160
+  image_height: 160
+  image_width: 320
+preprocess:
+  vis_processor:
+    train:
+      name: "blip_image_train"
+      image_size: 224
+    eval:
+      name: "blip_image_eval"
+      image_size: 224
+  text_processor:
+    train:
+      name: "blip_question"
+    eval:
+      name: "blip_question"
